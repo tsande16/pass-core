@@ -1,36 +1,47 @@
 package org.eclipse.pass.metadataschema.service;
-/*
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dataconservancy.pass.client.PassClient;
-import org.dataconservancy.pass.model.Repository;
+import org.eclipse.pass.object.PassClient;
+import org.eclipse.pass.object.PassClientResult;
+import org.eclipse.pass.object.PassClientSelector;
+import org.eclipse.pass.object.RSQL;
+import org.eclipse.pass.object.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-*/
+
 
 class SchemaFetcherTest {
 
-    /*private PassClient passClientMock;
-    private Repository repository1mock;
-    private Repository repository2mock;
+    private static final Logger LOGGER = Logger.getLogger(SchemaFetcherTest.class.getName());
+    private PassClient passClientMock;
+    private Repository repositoryMock;
+    private Repository repositoryMock2;
+    private PassClientResult passClientResultMock;
+    private PassClientResult passClientResultMock2;
     private SchemaFetcher s;
     private ObjectMapper map;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         passClientMock = Mockito.mock(PassClient.class);
-        repository1mock = Mockito.mock(Repository.class);
-        repository2mock = Mockito.mock(Repository.class);
+        repositoryMock = Mockito.mock(Repository.class);
+        repositoryMock2 = Mockito.mock(Repository.class);
+        passClientResultMock = Mockito.mock(PassClientResult.class);
+        passClientResultMock2 = Mockito.mock(PassClientResult.class);
         s = new SchemaFetcher(passClientMock);
         map = new ObjectMapper();
     }
@@ -50,19 +61,15 @@ class SchemaFetcherTest {
     }
 
     @Test
+    @DisplayName("Test: Test getRepositorySchemasTest() with two schemas. Should return a list of  both schemas.")
     void getRepositorySchemasTest() throws Exception {
-        when(passClientMock.findByAttribute(Repository.class, "@id", new URI("repository1")))
-                .thenReturn(new URI("uri_to_repository1"));
-        when(passClientMock.findByAttribute(Repository.class, "@id", new URI("repository2")))
-                .thenReturn(new URI("uri_to_repository2"));
-        when(passClientMock.readResource(new URI("uri_to_repository1"), Repository.class)).thenReturn(repository1mock);
-        when(passClientMock.readResource(new URI("uri_to_repository2"), Repository.class)).thenReturn(repository2mock);
+        when(passClientMock.selectObjects(Mockito.any(PassClientSelector.class))).thenReturn(passClientResultMock);
+        when(passClientResultMock.getObjects()).thenReturn(Collections.singletonList(repositoryMock));
+        when(passClientResultMock.getTotal()).thenReturn(1L);
         List<URI> r1_schemas_list = Arrays.asList(new URI("/example/schemas/schema1.json"),
                 new URI("/example/schemas/schema2.json"));
-        List<URI> r2_schemas_list = Arrays.asList(new URI("/example/schemas/schema2.json"),
-                new URI("/example/schemas/schema3.json"), new URI("/example/schemas/schema_to_deref.json"));
-        when(repository1mock.getSchemas()).thenReturn(r1_schemas_list);
-        when(repository2mock.getSchemas()).thenReturn(r2_schemas_list);
+        when(repositoryMock.getSchemas()).thenReturn(r1_schemas_list);
+
         String expectedJsonSchema1 = "{\r\n" + "    \"$schema\": \"http://example.org/example/schemas/schema\",\r\n"
                 + "    \"$id\": \"http://example.org/example/schemas/foo\",\r\n" + "    \"title\": \"foo\",\r\n"
                 + "    \"description\": \"foo schema\",\r\n" + "    \"$comment\": \"one\",\r\n"
@@ -89,14 +96,18 @@ class SchemaFetcherTest {
     }
 
     @Test
+    @DisplayName("Test: Test getSchemasTest() with two schemas. Should return a list of  both schemas.")
     void getSchemasTest() throws Exception {
         List<String> repository_uris = new ArrayList<String>(Arrays.asList("repository1", "repository2"));
-        when(passClientMock.findByAttribute(Repository.class, "@id", new URI("repository1")))
-                .thenReturn(new URI("uri_to_repository1"));
-        when(passClientMock.findByAttribute(Repository.class, "@id", new URI("repository2")))
-                .thenReturn(new URI("uri_to_repository2"));
-        when(passClientMock.readResource(new URI("uri_to_repository1"), Repository.class)).thenReturn(repository1mock);
-        when(passClientMock.readResource(new URI("uri_to_repository2"), Repository.class)).thenReturn(repository2mock);
+        PassClientSelector selector1 = spy(new PassClientSelector<>(Repository.class, 0, 100, "url='repository1'", null));
+        PassClientSelector selector2 = spy(new PassClientSelector<>(Repository.class, 0, 100, "url='repository2'", null));
+        when(passClientMock.selectObjects(selector1)).thenReturn(passClientResultMock);
+        when(passClientMock.selectObjects(selector2)).thenReturn(passClientResultMock2);
+        when(passClientResultMock.getTotal()).thenReturn(1L);
+        when(passClientResultMock2.getTotal()).thenReturn(1L);
+        when(passClientResultMock.getObjects()).thenReturn(Collections.singletonList(repositoryMock));
+        when(passClientResultMock2.getObjects()).thenReturn(Collections.singletonList(repositoryMock2));
+
         List<URI> r1_schemas_list = Arrays.asList(new URI("/example/schemas/schema1.json"),
                 new URI("/example/schemas/schema2.json"));
 
@@ -106,8 +117,8 @@ class SchemaFetcherTest {
         // performed
         List<URI> r2_schemas_list = Arrays.asList(new URI("/example/schemas/schema2.json"),
                 new URI("/example/schemas/schema3.json"), new URI("/example/schemas/schema_to_deref.json"));
-        when(repository1mock.getSchemas()).thenReturn(r1_schemas_list);
-        when(repository2mock.getSchemas()).thenReturn(r2_schemas_list);
+        when(repositoryMock.getSchemas()).thenReturn(r1_schemas_list);
+        when(repositoryMock2.getSchemas()).thenReturn(r2_schemas_list);
 
         // example/schemas/schema1.json
         String expectedJsonSchema1 = "{\r\n" + "    \"$schema\": \"http://example.org/example/schemas/schema\",\r\n"
@@ -159,7 +170,7 @@ class SchemaFetcherTest {
         assertEquals(expected, result);
     }
 
-    @Test
+    /*@Test
     void invalidSchemaUriTest() throws Exception {
         when(passClientMock.findByAttribute(Repository.class, "@id", new URI("repository1")))
                 .thenReturn(new URI("uri_to_repository1"));

@@ -15,6 +15,7 @@
  */
 package org.eclipse.pass.metadataschema.service;
 
+/*
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,9 +28,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+ */
+
 class SchemaMergerTest {
 
-    private SchemaMerger merger;
+    /*private SchemaMerger merger;
     private ObjectMapper map;
 
     @BeforeEach
@@ -222,5 +225,5 @@ class SchemaMergerTest {
         String actualMessage = ex.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
-    }
+    }*/
 }

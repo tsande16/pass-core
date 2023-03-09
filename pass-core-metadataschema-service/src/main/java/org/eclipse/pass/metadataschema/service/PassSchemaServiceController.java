@@ -86,9 +86,9 @@ public class PassSchemaServiceController {
      * logic of generating a merged schema from the list of relevant repository
      * schemas to a PASS submission
      */
-    @PostMapping
+    @PostMapping("/schemaservice")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        LOG.info("PassSchemaServiceController received POST request");
         List<String> repository_list = new ArrayList<String>();
 
         response.setHeader("Accept-Post", "application/json, text/plain");

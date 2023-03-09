@@ -99,14 +99,26 @@ public class SchemaFetcher {
      * @throws URISyntaxException
      * @throws IllegalArgumentException
      */
-    List<JsonNode> getRepositorySchemas(String repositoryUri)
+   List<JsonNode> getRepositorySchemas(String repositoryUri)
             throws URISyntaxException, IllegalArgumentException, IOException {
         //URI uriRepo;
+        LOG.info("SchemaFetcher - getRepositorySchemas - Repository URI: " + repositoryUri);
         Repository repo = null;
+        PassClientResult<Repository> result = null;
         List<JsonNode> repository_schemas = new ArrayList<JsonNode>();
         String filter = RSQL.equals("url", repositoryUri);
-        PassClientResult<Repository> result = passClient.
-                selectObjects(new PassClientSelector<>(Repository.class, 0, 100, filter, null));
+        LOG.info("SchemaFetcher - getRepositorySchemas - Repository filter: " + filter);
+        try {
+            PassClientSelector selector = new PassClientSelector<>(Repository.class, 0, 100, filter,null);
+            result = passClient.selectObjects(selector);
+            LOG.info("SchemaFetcher - getRepositorySchemas - Repository after result");
+        } catch (NullPointerException e){
+            throw new IOException("Repository not found at " + repositoryUri);
+        }
+        if(result == null){
+            LOG.info("result is null");
+        }
+        LOG.info("SchemaFetcher - getRepositorySchemas - Repository result.getTotal(): " + result.getTotal());
         if (result.getTotal() == 1) {
             repo = result.getObjects().get(0);
         } else if (result.getTotal() > 1) {
@@ -114,7 +126,7 @@ public class SchemaFetcher {
         } else if (result.getTotal() == 0) {
             throw new IOException("No repository found at " + repositoryUri);
         }
-
+        LOG.info("SchemaFetcher - getRepositorySchemas - Repository getName: " + repo.getName());
         List<URI> schema_uris = repo.getSchemas();
         for (URI schema_uri : schema_uris) {
             LOG.info("SchemaFetcher - Schema URI: " + schema_uri);
@@ -133,7 +145,7 @@ public class SchemaFetcher {
      * @throws StreamReadException
      */
     JsonNode getSchemaFromUri(URI schema_uri) throws IOException, IllegalArgumentException {
-
+        LOG.info("SchemaFetcher - Schema URI: " + schema_uri);
         // Given the schema's $id url, go to the corresponding local json file
         // by loading it as a resource stream based on the last 2 parts of the $id
         // Create a SchemaInstance object from the json file and return it
@@ -141,14 +153,20 @@ public class SchemaFetcher {
         String[] path_segments = path.split("/pass-metadata-schemas");
         String path_to_schema = path_segments[path_segments.length - 1];
         JsonNode schema = null;
+        LOG.info("SchemaFetcher - Path to schema: " + path_to_schema);
         schema = getLocalSchema(path_to_schema);
         return schema;
     }
 
     public static JsonNode getLocalSchema(String path) throws IOException, IllegalArgumentException {
+        LOG.info("SchemaFetcher - getLocalSchema - schema path: " + path);
         InputStream schema_json = SchemaFetcher.class.getResourceAsStream(path);
+        LOG.info("SchemaFetcher - after schema_json");
         ObjectMapper objmapper = new ObjectMapper();
+        LOG.info("SchemaFetcher - after objmapper");
         JsonNode schema_obj = objmapper.readTree(schema_json);
+        LOG.info("SchemaFetcher - after schema_obj");
+        LOG.info("SchemaFetcher - Schema: " + schema_obj);
         return schema_obj;
     }
 }

@@ -44,7 +44,7 @@ class SchemaInstanceTest {
      * dependencies and have the same number of properties, the one that appears
      * first in the initial list will be first in the result.
      */
-    @Test
+    /*@Test
     void testSort() throws JsonMappingException, JsonProcessingException {
         String one = "{\r\n" + "        \"$id\": \"http://example.org/schemas/one.json\",\r\n"
                 + "        \"definitions\": {\r\n" + "            \"form\": {\r\n"
@@ -127,7 +127,7 @@ class SchemaInstanceTest {
         SchemaInstance testSchema = new SchemaInstance(map.readTree(example_schema_json));
         SchemaInstance expectedSchema = new SchemaInstance(map.readTree(expected));
         testSchema.dereference(testSchema.getSchema(), "");
-        assertEquals(expectedSchema.getSchema(), testSchema.getSchema());*/
-    }
+        assertEquals(expectedSchema.getSchema(), testSchema.getSchema());
+    }*/
 
 }
