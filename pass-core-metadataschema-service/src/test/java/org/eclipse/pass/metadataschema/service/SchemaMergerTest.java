@@ -15,7 +15,7 @@
  */
 package org.eclipse.pass.metadataschema.service;
 
-/*
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -28,11 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
- */
-
 class SchemaMergerTest {
 
-    /*private SchemaMerger merger;
+    private SchemaMerger merger;
     private ObjectMapper map;
 
     @BeforeEach
@@ -40,7 +38,7 @@ class SchemaMergerTest {
         map = new ObjectMapper();
     }
 
-    // @Test
+    @Test
     void simpleIgnorePreamble() throws Exception {
         String schema1 = "{\r\n" + "            \"$schema\": \"http://example.org/schema\",\r\n"
                 + "            \"$id\": \"http://example.org/foo\",\r\n" + "            \"title\": \"foo\",\r\n"
@@ -61,7 +59,7 @@ class SchemaMergerTest {
         assertEquals(result, expected);
     }
 
-    // @Test
+    @Test
     void ignorableConflicts() throws Exception {
         String schema1 = "{\r\n" + "            \"a\": {\r\n" + "                \"title\": \"A\",\r\n"
                 + "                \"description\": \"a letter\",\r\n"
@@ -85,7 +83,7 @@ class SchemaMergerTest {
         assertEquals(expected, result);
     }
 
-    // @Test
+    @Test
     void simpleArrayDeduplication() throws Exception {
         String schema1 = "{\r\n" + "            \"array\": [\"a\", \"b\", \"c\"]\r\n" + "        }";
         String schema2 = "{\r\n" + "            \"array\": [\"b\", \"c\", \"d\"]\r\n" + "        }";
@@ -102,7 +100,7 @@ class SchemaMergerTest {
         assertEquals(expected, result);
     }
 
-    // @Test
+    @Test
     void complexArrayDeduplication() throws Exception {
         String schema1 = "{\r\n" + "            \"array\": [{\"a\": [\"b\", {\"c\": \"d\"}]}, \"e\"]\r\n" + "        }";
         String schema2 = "{\r\n" + "            \"array\": [{\"a\": [\"b\", {\"c\": \"d\"}]}, \"f\"]\r\n" + "        }";
@@ -121,7 +119,7 @@ class SchemaMergerTest {
         assertEquals(expected, result);
     }
 
-    // @Test
+    @Test
     void objectMerge() throws Exception {
         String schema1 = "{\r\n" + "            \"a\": \"b\",\r\n" + "            \"c\": [\"d\", \"e\"]\r\n"
                 + "        }";
@@ -150,7 +148,7 @@ class SchemaMergerTest {
         assertEquals(expected, result);
     }
 
-    // @Test
+    @Test
     void testMergerFull() throws Exception {
         InputStream schema1 = SchemaMergerTest.class.getResourceAsStream("/example/schemas/schema1.json");
         InputStream schema2 = SchemaMergerTest.class.getResourceAsStream("/example/schemas/schema2.json");
@@ -179,9 +177,7 @@ class SchemaMergerTest {
 
         List<JsonNode> toMerge = Arrays.asList(schema_one, schema_two);
         merger = new SchemaMerger();
-        Exception ex = assertThrows(MergeFailException.class, () -> {
-            merger.mergeSchemas(toMerge);
-        });
+        Exception ex = assertThrows(MergeFailException.class, () -> merger.mergeSchemas(toMerge));
 
         String expectedMessage = "Type conflict for property 'key': ARRAY vs STRING/NUMBER";
         String actualMessage = ex.getMessage();
@@ -198,9 +194,7 @@ class SchemaMergerTest {
 
         List<JsonNode> toMerge = Arrays.asList(schema_one, schema_two);
         merger = new SchemaMerger();
-        Exception ex = assertThrows(MergeFailException.class, () -> {
-            merger.mergeSchemas(toMerge);
-        });
+        Exception ex = assertThrows(MergeFailException.class, () -> merger.mergeSchemas(toMerge));
 
         String expectedMessage = "Type conflict for property 'key': STRING vs ARRAY";
         String actualMessage = ex.getMessage();
@@ -217,13 +211,11 @@ class SchemaMergerTest {
 
         List<JsonNode> toMerge = Arrays.asList(schema_one, schema_two);
         merger = new SchemaMerger();
-        Exception ex = assertThrows(MergeFailException.class, () -> {
-            merger.mergeSchemas(toMerge);
-        });
+        Exception ex = assertThrows(MergeFailException.class, () -> merger.mergeSchemas(toMerge));
 
         String expectedMessage = "Type conflict for property 'key': STRING vs OBJECT";
         String actualMessage = ex.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
-    }*/
+    }
 }
