@@ -36,7 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -87,13 +86,12 @@ public class PassSchemaServiceController {
      * logic of generating a merged schema from the list of relevant repository
      * schemas to a PASS submission
      *
-     * @param repoIds a list of repository URIs
      * @param request the HTTP request
      * @throws IOException if the request cannot be read or schema cannot be merged
      * @return a merged schema in JSON format
      */
     @PostMapping("/schemaservice")
-    protected ResponseEntity<?> getSchema(@RequestParam("id") String repoIds, HttpServletRequest request)
+    protected ResponseEntity<?> getSchema(HttpServletRequest request)
             throws IOException {
         LOG.info("PassSchemaServiceController received POST request");
         List<String> repository_list = new ArrayList<>();
@@ -102,6 +100,7 @@ public class PassSchemaServiceController {
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
 
         if (request.getContentType().equals("text/plain")) {
+            LOG.error("PassSchemaServiceController content type: " + request.getContentType());
             repository_list = readText(br);
         } else {
             try {

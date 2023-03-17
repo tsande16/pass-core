@@ -13,7 +13,6 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,16 +118,14 @@ class SchemaControllerTest {
         ServletInputStream servletstream = createServletInputStream(stream);
 
         when(request.getInputStream()).thenReturn(servletstream);
+        when(request.getContentType()).thenReturn("application/json");
 
-        ResponseEntity response = s.getSchema(repositories, request);
+        ResponseEntity response = s.getSchema(request);
         InputStream expected_schema_json = SchemaServiceTest.class
                 .getResourceAsStream("/example/schemas/example_merged_dereferenced.json");
         ObjectMapper map = new ObjectMapper();
         JsonNode expected = map.readTree(expected_schema_json);
         JsonNode actual = map.readTree(response.getBody().toString());
-        String respHeader = response.getHeaders().getAccept().toString();
-
-        //assertEquals("application/json, text/plain", respHeader);
         assertEquals(expected, actual);
     }
 }
