@@ -46,24 +46,28 @@ These schemas follow a defined structure where properties in `/definitions/form/
 
 A pass [repository](https://oa-pass.github.io/pass-data-model/documentation/Repository.html) entity represents a target repository where
 submissions may be submitted.  Each repository may link to one or more JSON schemas that define the repository's metadata requirements.
-In terms of expressing a desired user interface experience, one may observe a general pattern of pointing to a "common" schema containing ubiquitous fields, and additionally pointing to a "repository-specific" schema containing any additional fields that are unique to a given repository.
+In terms of expressing a desired user interface experience, one may observe a general pattern of pointing to a "common" schema containing ubiquitous fields, 
+and additionally pointing to a "repository-specific" schema containing any additional fields that are unique to a given repository.
 
 As a concrete example, the NIHMS repository may point to the [common.json](jhu/common.json) schema, as well as the [nihms.json](jhu/nihms.json)
 schema.
 
 ## Schema service
 
-The schema service is an http service that accepts a list of PASS [repository](https://oa-pass.github.io/pass-data-model/documentation/Repository.html) entity URIs as `application/json` or newline delimited `text/plain`, in a POST request.  for example:
+The schema service is an http service that accepts a list of PASS [repository](https://oa-pass.github.io/pass-data-model/documentation/Repository.html) 
+entity IDs `application/json` or newline delimited `text/plain`, in a POST request.  for example:
 
     [
-        "http://pass.jhu.edu/fcrepo/rest/repositories/foo",
-        "http://pass.jhu.edu/fcrepo/rest/repositories/bar",
+        "1",
+        "2",
+        "3"
     ]
 
 For each repository, the schema service will retrieve the list of schemas relevant to the repository, place that list in the correct order (so
 that schemas that provide the most dependencies are displayed first), and resolves all `$ref` references that might appear in the schema.
 
-If a `merge` query parameter is provided (with any value, e.g. `?merge=true`), then all schemas will be merged into a single union schema. If the service is unable to merge schemas together, it will respond with `409 Conflict` status. 
+If a `merge` query parameter is provided (with any value, e.g. `?merge=true`), then all schemas will be merged into a single union schema. 
+If the service is unable to merge schemas together, it will respond with `409 Conflict` status. 
 In this case, a client can issue a request without the `merge` query parameter to get the un-merged list of schemas.
 
 The result is an `application/json` response that contains a JSON list of schemas.
@@ -82,4 +86,4 @@ The service will return the following HTTP error responses:
 
 ### Retrieve schemas for a list of repositories
 
-    curl -X POST -H "Content-Type: application/json" -d '["http://pass.jhu.edu/fcrepo/rest/repositories/foo", "http://pass.jhu.edu/fcrepo/rest/repositories/bar"]' http://localhost:8080/schemas
+  `curl --location "http://localhost:8080/schemaservice" --header 'Content-Type: application/json' --data "[ "1", "2" ]"`
